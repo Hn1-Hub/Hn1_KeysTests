@@ -1,6 +1,7 @@
 local TS, P = game:GetService("TweenService"), game:GetService("Players")
 local plr = P.LocalPlayer
 
+-- Move function
 local function move(char)
     local root = char:FindFirstChild("HumanoidRootPart") or char:WaitForChild("HumanoidRootPart")
     local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Linear)
@@ -17,20 +18,22 @@ end
 if plr.Character then move(plr.Character) end
 plr.CharacterAdded:Connect(move)
 
--- UI Button ON/OFF
+-- UI Toggle Button (Local)
 local UIS, enabled = game:GetService("UserInputService"), false
 local gui = Instance.new("ScreenGui")
-gui.Parent = game.CoreGui
+gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui") -- LOCAL UI
 
-local btn = Instance.new("TextButton")
-btn.Parent = gui
+local btn = Instance.new("TextButton", gui)
 btn.Size, btn.Position = UDim2.new(0, 120, 0, 40), UDim2.new(0.4, 0, 0.1, 0)
 btn.BackgroundColor3, btn.TextColor3 = Color3.fromRGB(128, 0, 255), Color3.new(1, 1, 1)
 btn.Text, btn.Font, btn.TextSize = "OFF", Enum.Font.GothamBold, 18
-btn.AutoButtonColor, btn.Draggable = true, true
+btn.AutoButtonColor = true
 btn.BorderSizePixel, btn.BackgroundTransparency = 2, 0.2
 btn.TextStrokeTransparency = 0.5
+btn.Active = true
+btn.Draggable = false -- We will manually make it draggable
 
+-- Toggle Function
 btn.MouseButton1Click:Connect(function()
     enabled = not enabled
     btn.Text, btn.BackgroundColor3 = enabled and "ON" or "OFF", enabled and Color3.fromRGB(180, 0, 255) or Color3.fromRGB(128, 0, 255)
