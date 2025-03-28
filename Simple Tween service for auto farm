@@ -2,11 +2,11 @@ local TS, P = game:GetService("TweenService"), game:GetService("Players")
 local plr = P.LocalPlayer
 
 local function move(char)
-    local root = char:WaitForChild("HumanoidRootPart")
+    local root = char:FindFirstChild("HumanoidRootPart") or char:WaitForChild("HumanoidRootPart")
     local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Linear)
 
     task.spawn(function()
-        while char and char.Parent do
+        while root and char and char.Parent do
             local offset = Vector3.new(math.random() * 0.1 - 0.05, 0, math.random() * 0.1 - 0.05)
             TS:Create(root, tweenInfo, {CFrame = CFrame.new(getgenv().TP + offset)}):Play()
             task.wait(0.05)
@@ -19,9 +19,9 @@ plr.CharacterAdded:Connect(move)
 
 -- UI Button ON/OFF
 local UIS, enabled = game:GetService("UserInputService"), false
-local gui, btn = Instance.new("ScreenGui", game.CoreGui), Instance.new("TextButton")
+local gui, btn = Instance.new("ScreenGui", game.CoreGui), Instance.new("TextButton", gui)
 
-btn.Parent, btn.Size, btn.Position = gui, UDim2.new(0, 100, 0, 50), UDim2.new(0.4, 0, 0.1, 0)
+btn.Size, btn.Position = UDim2.new(0, 100, 0, 50), UDim2.new(0.4, 0, 0.1, 0)
 btn.BackgroundColor3, btn.TextColor3 = Color3.fromRGB(128, 0, 255), Color3.new(1, 1, 1)
 btn.Text, btn.Font, btn.TextSize = "OFF", Enum.Font.GothamBold, 18
 btn.AutoButtonColor, btn.Draggable = true, true
