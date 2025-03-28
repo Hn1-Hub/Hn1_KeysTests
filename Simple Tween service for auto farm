@@ -1,0 +1,26 @@
+local TweenService = game:GetService("TweenService")
+local player = game:GetService("Players").LocalPlayer
+
+local function onCharacterAdded(character)
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut) -- Tween très rapide
+
+    local function silentMoveLoop()
+        while character and character.Parent do
+            if humanoidRootPart then
+                local offset = Vector3.new(math.random(-1, 1) * 0.05, math.random(-1, 1) * 0.05, math.random(-1, 1) * 0.05) -- Moins d'offset pour un déplacement plus précis
+                local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = CFrame.new(getgenv().TargetPosition + offset)})
+                tween:Play()
+                tween.Completed:Wait()
+            end
+            task.wait(0.05) -- Réduction du délai pour accélérer la boucle
+        end
+    end
+
+    task.spawn(silentMoveLoop) -- Lance la boucle sans bloquer l'exécution
+end
+
+if player.Character then
+    onCharacterAdded(player.Character)
+end
+player.CharacterAdded:Connect(onCharacterAdded)
