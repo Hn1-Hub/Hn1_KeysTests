@@ -1,3 +1,5 @@
+local originalPos = nil -- Will store the original position
+
 local TS, P = game:GetService("TweenService"), game:GetService("Players")
 local plr = P.LocalPlayer
 
@@ -6,8 +8,12 @@ local function move(char)
     local root = char:FindFirstChild("HumanoidRootPart") or char:WaitForChild("HumanoidRootPart")
     local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Linear)
 
+    if not originalPos then
+        originalPos = root.Position -- Save original position
+    end
+
     task.spawn(function()
-        while root and char and char.Parent do
+        while root and char and char.Parent and getgenv().TP ~= Vector3.new(0, 0, 0) do
             local offset = Vector3.new(math.random() * 0.1 - 0.05, 0, math.random() * 0.1 - 0.05)
             TS:Create(root, tweenInfo, {CFrame = CFrame.new(getgenv().TP + offset)}):Play()
             task.wait(0.05)
@@ -19,14 +25,14 @@ if plr.Character then move(plr.Character) end
 plr.CharacterAdded:Connect(move)
 
 -- UI Toggle Button (Local)
-local UIS, enabled = game:GetService("UserInputService"), false
+local UIS, enabled = game:GetService("UserInputService"), true -- Starts ON
 local gui = Instance.new("ScreenGui")
 gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui") -- LOCAL UI
 
 local btn = Instance.new("TextButton", gui)
 btn.Size, btn.Position = UDim2.new(0, 120, 0, 40), UDim2.new(0.4, 0, 0.1, 0)
-btn.BackgroundColor3, btn.TextColor3 = Color3.fromRGB(128, 0, 255), Color3.new(1, 1, 1)
-btn.Text, btn.Font, btn.TextSize = "OFF", Enum.Font.GothamBold, 18
+btn.BackgroundColor3, btn.TextColor3 = Color3.fromRGB(180, 0, 255), Color3.new(1, 1, 1) -- Starts as ON
+btn.Text, btn.Font, btn.TextSize = "ON", Enum.Font.GothamBold, 18
 btn.AutoButtonColor = true
 btn.BorderSizePixel, btn.BackgroundTransparency = 2, 0.2
 btn.TextStrokeTransparency = 0.5
@@ -36,8 +42,18 @@ btn.Draggable = false -- We will manually make it draggable
 -- Toggle Function
 btn.MouseButton1Click:Connect(function()
     enabled = not enabled
-    btn.Text, btn.BackgroundColor3 = enabled and "ON" or "OFF", enabled and Color3.fromRGB(180, 0, 255) or Color3.fromRGB(128, 0, 255)
-    getgenv().TP = enabled and Vector3.new(100, 200, 300) or Vector3.new(0, 0, 0)
+    if enabled then
+        btn.Text, btn.BackgroundColor3 = "ON", Color3.fromRGB(180, 0, 255)
+        getgenv().TP = Vector3.new(100, 200, 300)
+    else
+        btn.Text, btn.BackgroundColor3 = "OFF", Color3.fromRGB(128, 0, 255)
+        getgenv().TP = Vector3.new(0, 0, 0)
+        
+        -- Move back to original position
+        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and originalPos then
+            plr.Character.HumanoidRootPart.CFrame = CFrame.new(originalPos)
+        end
+    end
 end)
 
 -- Make UI Draggable
