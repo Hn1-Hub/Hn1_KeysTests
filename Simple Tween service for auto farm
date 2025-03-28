@@ -1,26 +1,33 @@
-local TweenService = game:GetService("TweenService")
-local player = game:GetService("Players").LocalPlayer
+local TS, P = game:GetService("TweenService"), game:GetService("Players")
+local plr = P.LocalPlayer
 
-local function onCharacterAdded(character)
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut) -- Tween très rapide
+local function move(char)
+    local root = char:WaitForChild("HumanoidRootPart")
+    local tweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Linear)
 
-    local function silentMoveLoop()
-        while character and character.Parent do
-            if humanoidRootPart then
-                local offset = Vector3.new(math.random(-1, 1) * 0.05, math.random(-1, 1) * 0.05, math.random(-1, 1) * 0.05) -- Moins d'offset pour un déplacement plus précis
-                local tween = TweenService:Create(humanoidRootPart, tweenInfo, {CFrame = CFrame.new(getgenv().TargetPosition + offset)})
-                tween:Play()
-                tween.Completed:Wait()
-            end
-            task.wait(0.05) -- Réduction du délai pour accélérer la boucle
+    task.spawn(function()
+        while char and char.Parent do
+            local offset = Vector3.new(math.random() * 0.1 - 0.05, 0, math.random() * 0.1 - 0.05)
+            TS:Create(root, tweenInfo, {CFrame = CFrame.new(getgenv().TP + offset)}):Play()
+            task.wait(0.05)
         end
-    end
-
-    task.spawn(silentMoveLoop) -- Lance la boucle sans bloquer l'exécution
+    end)
 end
 
-if player.Character then
-    onCharacterAdded(player.Character)
-end
-player.CharacterAdded:Connect(onCharacterAdded)
+if plr.Character then move(plr.Character) end
+plr.CharacterAdded:Connect(move)
+
+-- UI Button ON/OFF
+local UIS, enabled = game:GetService("UserInputService"), false
+local gui, btn = Instance.new("ScreenGui", game.CoreGui), Instance.new("TextButton")
+
+btn.Parent, btn.Size, btn.Position = gui, UDim2.new(0, 100, 0, 50), UDim2.new(0.4, 0, 0.1, 0)
+btn.BackgroundColor3, btn.TextColor3 = Color3.fromRGB(128, 0, 255), Color3.new(1, 1, 1)
+btn.Text, btn.Font, btn.TextSize = "OFF", Enum.Font.GothamBold, 18
+btn.AutoButtonColor, btn.Draggable = true, true
+
+btn.MouseButton1Click:Connect(function()
+    enabled = not enabled
+    btn.Text, btn.BackgroundColor3 = enabled and "ON" or "OFF", enabled and Color3.fromRGB(180, 0, 255) or Color3.fromRGB(128, 0, 255)
+    getgenv().TP = enabled and Vector3.new(100, 200, 300) or Vector3.new(0, 0, 0)
+end)
