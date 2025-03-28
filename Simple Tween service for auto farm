@@ -19,15 +19,47 @@ plr.CharacterAdded:Connect(move)
 
 -- UI Button ON/OFF
 local UIS, enabled = game:GetService("UserInputService"), false
-local gui, btn = Instance.new("ScreenGui", game.CoreGui), Instance.new("TextButton", gui)
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.CoreGui
 
-btn.Size, btn.Position = UDim2.new(0, 100, 0, 50), UDim2.new(0.4, 0, 0.1, 0)
+local btn = Instance.new("TextButton")
+btn.Parent = gui
+btn.Size, btn.Position = UDim2.new(0, 120, 0, 40), UDim2.new(0.4, 0, 0.1, 0)
 btn.BackgroundColor3, btn.TextColor3 = Color3.fromRGB(128, 0, 255), Color3.new(1, 1, 1)
 btn.Text, btn.Font, btn.TextSize = "OFF", Enum.Font.GothamBold, 18
 btn.AutoButtonColor, btn.Draggable = true, true
+btn.BorderSizePixel, btn.BackgroundTransparency = 2, 0.2
+btn.TextStrokeTransparency = 0.5
 
 btn.MouseButton1Click:Connect(function()
     enabled = not enabled
     btn.Text, btn.BackgroundColor3 = enabled and "ON" or "OFF", enabled and Color3.fromRGB(180, 0, 255) or Color3.fromRGB(128, 0, 255)
     getgenv().TP = enabled and Vector3.new(100, 200, 300) or Vector3.new(0, 0, 0)
+end)
+
+-- Make UI Draggable
+local dragging, dragInput, dragStart, startPos
+
+btn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = btn.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+
+btn.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        btn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
 end)
