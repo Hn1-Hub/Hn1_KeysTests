@@ -8,6 +8,7 @@ local scripts = {
     ["14044547200"] = "https://raw.githubusercontent.com/Hn1-Hub/Hn1_KeysTests/refs/heads/main/UTG",
     ["15186202290"] = "https://raw.githubusercontent.com/Hn1-Hub/Hn1_KeysTests/refs/heads/main/da%20game",
     ["77369032494150"] = "https://raw.githubusercontent.com/Hn1-Hub/Hn1_KeysTests/refs/heads/main/da%20game",
+    ["94647229517154"] = "https://raw.githubusercontent.com/Hn1-Hub/Hn1_KeysTests/refs/heads/main/Azure%20Latch",
 }
 
 local placeId = tostring(game.PlaceId)
